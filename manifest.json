@@ -1,0 +1,16 @@
+{
+  "name": "Countdown",
+  "short_name": "Countdown",
+  "start_url": "/call/",
+  "scope": "/call/",
+  "display": "standalone",
+  "background_color": "#1e3c72",
+  "theme_color": "#1e3c72",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
