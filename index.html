@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Countdown</title>
 
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
 <meta name="theme-color" content="#1e3c72">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -27,12 +25,16 @@ body {
 }
 
 .container {
-  width: 92%;
-  max-width: 380px;
+  width: 94%;
+  max-width: 420px;
   background: rgba(0,0,0,0.35);
-  padding: 24px;
+  padding: 22px;
   border-radius: 20px;
   text-align: center;
+}
+
+h1 {
+  margin: 0 0 10px;
 }
 
 .progress-wrapper {
@@ -40,7 +42,7 @@ body {
   background: rgba(255,255,255,0.25);
   border-radius: 10px;
   overflow: hidden;
-  margin: 10px 0 6px;
+  margin-bottom: 6px;
 }
 
 .progress-bar {
@@ -51,44 +53,43 @@ body {
 .meta {
   font-size: 0.75rem;
   opacity: 0.85;
+  margin-bottom: 10px;
 }
 
-.countdown {
+.grid {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  margin-top: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 .box {
   background: rgba(255,255,255,0.12);
   border-radius: 14px;
-  padding: 14px 0;
+  padding: 10px 0;
 }
 
-.num { font-size: 2.2rem; font-weight: 700; }
-.label { font-size: 0.7rem; letter-spacing: 1px; opacity: 0.8; }
+.num { font-size: 1.5rem; font-weight: 700; }
+.label { font-size: 0.65rem; opacity: 0.8; letter-spacing: 0.5px; }
 
-.dev {
+.confetti {
   position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(10px);
-  padding: 10px;
-  border-radius: 14px;
-  font-size: 0.8rem;
-  z-index: 9999;
+  width: 6px;
+  height: 6px;
+  top: -10px;
+  animation: fall 3s linear forwards;
 }
 
-.dev button {
-  margin: 4px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: none;
-  background: #4facfe;
-  color: #000;
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(360deg); }
+}
+
+.end {
+  animation: reveal 1.2s ease forwards;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
@@ -97,13 +98,16 @@ body {
 <div class="container">
   <h1>Countdown</h1>
 
-  <div class="progress-wrapper" id="progressWrap">
+  <div class="progress-wrapper">
     <div class="progress-bar" id="progress"></div>
   </div>
 
   <div class="meta" id="meta"></div>
 
-  <div class="countdown" id="countdown">
+  <div class="grid" id="grid">
+    <div class="box"><div class="num" id="years"></div><div class="label">YEARS</div></div>
+    <div class="box"><div class="num" id="months"></div><div class="label">MONTHS</div></div>
+    <div class="box"><div class="num" id="weeks"></div><div class="label">WEEKS</div></div>
     <div class="box"><div class="num" id="days"></div><div class="label">DAYS</div></div>
     <div class="box"><div class="num" id="hours"></div><div class="label">HOURS</div></div>
     <div class="box"><div class="num" id="minutes"></div><div class="label">MINUTES</div></div>
@@ -112,59 +116,88 @@ body {
 </div>
 
 <script>
-/* ---------- EST OFFSET (CALCULATED ONCE) ---------- */
+/* ---------- EST OFFSET (ONE-TIME) ---------- */
 function getESTOffsetMs() {
   const now = new Date();
   const est = new Date(
     new Intl.DateTimeFormat("en-US", {
       timeZone: "America/New_York",
-      hour12: false,
       year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit"
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hour12: false
     }).format(now)
   );
   return est.getTime() - now.getTime();
 }
-
 const EST_OFFSET = getESTOffsetMs();
 
-/* ---------- CONSTANTS ---------- */
+/* ---------- CONSTANT DATES ---------- */
 const START = new Date("2026-02-03T00:00:00-05:00").getTime();
+const MID   = new Date("2027-02-03T00:00:00-05:00").getTime();
 const END   = new Date("2028-02-03T00:00:00-05:00").getTime();
 
-/* ---------- DEV OFFSET ---------- */
-let devOffset = 0;
+let firedMid = false;
+let firedEnd = false;
 
-/* ---------- TIME SOURCE (SMOOTH) ---------- */
 function nowEST() {
-  return Date.now() + EST_OFFSET + devOffset;
+  return Date.now() + EST_OFFSET;
 }
 
-/* ---------- UPDATE LOOP ---------- */
+/* ---------- CONFETTI ---------- */
+function confetti(count = 80) {
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = `hsl(${Math.random()*360},100%,60%)`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+/* ---------- UPDATE ---------- */
 function update() {
   const now = nowEST();
 
+  if (!firedMid && now >= MID) {
+    firedMid = true;
+    confetti(100);
+  }
+
   if (now >= END) {
-    document.body.innerHTML = "<h1 style='animation:fade 1.2s ease'>📞 Call today?</h1>";
+    if (!firedEnd) {
+      firedEnd = true;
+      confetti(160);
+    }
+    document.body.innerHTML = "<h1 class='end'>📞 Call today?</h1>";
     return;
   }
 
-  const diff = END - now;
+  let remaining = END - now;
 
-  days.textContent = Math.floor(diff / 86400000);
-  hours.textContent = Math.floor(diff / 3600000) % 24;
-  minutes.textContent = Math.floor(diff / 60000) % 60;
-  seconds.textContent = Math.floor(diff / 1000) % 60;
+  const secondsTotal = Math.floor(remaining / 1000);
+  seconds.textContent = secondsTotal % 60;
 
-  const percent = ((now - START) / (END - START)) * 100;
+  const minutesTotal = Math.floor(secondsTotal / 60);
+  minutes.textContent = minutesTotal % 60;
+
+  const hoursTotal = Math.floor(minutesTotal / 60);
+  hours.textContent = hoursTotal % 24;
+
+  const daysTotal = Math.floor(hoursTotal / 24);
+  weeks.textContent = Math.floor(daysTotal / 7);
+  days.textContent = daysTotal % 7;
+
+  months.textContent = Math.floor(daysTotal / 30.44);
+  years.textContent = Math.floor(daysTotal / 365.25);
+
+  let percentRaw = ((now - START) / (END - START)) * 100;
+  let percent = percentRaw >= 100 ? 100 : percentRaw;
 
   progress.style.width = percent.toFixed(2) + "%";
-  meta.textContent =
-    percent.toFixed(2) + "% completed • " +
-    Math.floor((now - START) / 86400000) + " days elapsed";
+  meta.textContent = percent.toFixed(2) + "% completed";
 }
 
-/* ---------- HIGH-FREQUENCY, SMOOTH ---------- */
 setInterval(update, 100);
 update();
 </script>
