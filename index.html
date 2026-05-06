@@ -1,205 +1,1161 @@
+# index.html
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Countdown</title>
 
-<meta name="theme-color" content="#1e3c72">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon.png" />
+
+<meta name="theme-color" content="#08111f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 <style>
-html, body {
-  margin: 0;
+
+/* ========================================================= */
+/* ======================= ROOT ============================ */
+/* ========================================================= */
+
+:root {
+
+  --bg-1: #08111f;
+  --bg-2: #0d1b33;
+  --bg-3: #163866;
+
+  --glass: rgba(255,255,255,0.10);
+  --glass-strong: rgba(255,255,255,0.16);
+  --glass-border: rgba(255,255,255,0.14);
+
+  --text-main: rgba(255,255,255,0.96);
+  --text-soft: rgba(255,255,255,0.72);
+  --text-faint: rgba(255,255,255,0.52);
+
+  --accent-a: #6ad5ff;
+  --accent-b: #7b9dff;
+  --accent-c: #9fbcff;
+
+  --shadow-large:
+    0 20px 40px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+
+  --blur-main: blur(28px);
+
+  --radius-main: 34px;
+  --radius-card: 26px;
+
+}
+
+/* ========================================================= */
+/* ======================= GLOBAL ========================== */
+/* ========================================================= */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
   height: 100%;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: white;
 }
 
 body {
+
+  margin: 0;
+  min-height: 100%;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    Inter,
+    system-ui,
+    sans-serif;
+
+  color: var(--text-main);
+
+  overflow-x: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background:
+    radial-gradient(circle at top left, rgba(80,140,255,0.45), transparent 32%),
+    radial-gradient(circle at top right, rgba(0,200,255,0.28), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(110,130,255,0.24), transparent 26%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-2), var(--bg-3));
+
+  position: relative;
+
+}
+
+/* ========================================================= */
+/* =================== FLOATING ORBS ======================= */
+/* ========================================================= */
+
+.orb {
+
+  position: fixed;
+  border-radius: 999px;
+  filter: blur(40px);
+  opacity: 0.45;
+  pointer-events: none;
+
+}
+
+.orb-a {
+
+  width: 240px;
+  height: 240px;
+
+  background: #2c6cff;
+
+  top: -40px;
+  left: -40px;
+
+  animation: driftA 18s ease-in-out infinite;
+
+}
+
+.orb-b {
+
+  width: 280px;
+  height: 280px;
+
+  background: #00b7ff;
+
+  bottom: -60px;
+  right: -60px;
+
+  animation: driftB 24s ease-in-out infinite;
+
+}
+
+.orb-c {
+
+  width: 180px;
+  height: 180px;
+
+  background: #7b8fff;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  animation: driftC 20s ease-in-out infinite;
+
+}
+
+@keyframes driftA {
+
+  0% {
+    transform: translate(0px, 0px);
+  }
+
+  50% {
+    transform: translate(50px, 20px);
+  }
+
+  100% {
+    transform: translate(0px, 0px);
+  }
+
+}
+
+@keyframes driftB {
+
+  0% {
+    transform: translate(0px, 0px);
+  }
+
+  50% {
+    transform: translate(-40px, -25px);
+  }
+
+  100% {
+    transform: translate(0px, 0px);
+  }
+
+}
+
+@keyframes driftC {
+
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -52%) scale(1.08);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+}
+
+/* ========================================================= */
+/* ===================== MAIN SHELL ======================== */
+/* ========================================================= */
+
+.app-shell {
+
+  width: min(92vw, 460px);
+
+  position: relative;
+  z-index: 5;
+
+}
+
+/* ========================================================= */
+/* ===================== GLASS PANEL ======================= */
+/* ========================================================= */
+
+.glass-panel {
+
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-main);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.15),
+      rgba(255,255,255,0.07)
+    );
+
+  backdrop-filter: var(--blur-main);
+  -webkit-backdrop-filter: var(--blur-main);
+
+  border: 1px solid var(--glass-border);
+
+  box-shadow: var(--shadow-large);
+
+  padding:
+    max(20px, env(safe-area-inset-top))
+    22px
+    max(24px, env(safe-area-inset-bottom))
+    22px;
+
+}
+
+.glass-panel::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,255,255,0.14),
+      transparent,
+      rgba(255,255,255,0.05)
+    );
+
+  pointer-events: none;
+
+}
+
+/* ========================================================= */
+/* ===================== HEADER ============================ */
+/* ========================================================= */
+
+.header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 22px;
+
+}
+
+.title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.main-title {
+
+  margin: 0;
+
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  font-weight: 700;
+
+  letter-spacing: -0.04em;
+
+}
+
+.subtitle {
+
+  color: var(--text-soft);
+
+  font-size: 0.95rem;
+
+}
+
+.live-pill {
+
+  padding: 10px 14px;
+
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.09);
+
+  border: 1px solid rgba(255,255,255,0.12);
+
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+
 }
 
-.container {
-  width: 94%;
-  max-width: 420px;
-  background: rgba(0,0,0,0.35);
-  padding: 22px;
-  border-radius: 20px;
-  text-align: center;
+.live-dot {
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 999px;
+
+  background: #8fff8f;
+
+  box-shadow:
+    0 0 10px #8fff8f,
+    0 0 20px #8fff8f;
+
+  animation: pulseDot 2s infinite;
+
 }
 
-h1 {
-  margin: 0 0 10px;
+@keyframes pulseDot {
+
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.25);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
 }
 
-.progress-wrapper {
-  height: 10px;
-  background: rgba(255,255,255,0.25);
-  border-radius: 10px;
+.live-text {
+
+  font-size: 0.82rem;
+  color: var(--text-soft);
+
+}
+
+/* ========================================================= */
+/* ===================== HERO CARD ========================= */
+/* ========================================================= */
+
+.hero-card {
+
+  position: relative;
+
+  border-radius: 30px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.13),
+      rgba(255,255,255,0.06)
+    );
+
+  border: 1px solid rgba(255,255,255,0.12);
+
+  padding: 24px;
+
   overflow: hidden;
-  margin-bottom: 6px;
+
 }
 
-.progress-bar {
+.hero-card::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 34%);
+
+  pointer-events: none;
+
+}
+
+.progress-top {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 16px;
+
+}
+
+.progress-label {
+
+  font-size: 0.92rem;
+  color: var(--text-soft);
+
+}
+
+.progress-value {
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
+}
+
+/* ========================================================= */
+/* =================== PROGRESS TRACK ====================== */
+/* ========================================================= */
+
+.progress-track {
+
+  width: 100%;
+  height: 18px;
+
+  border-radius: 999px;
+
+  overflow: hidden;
+
+  background: rgba(255,255,255,0.08);
+
+  position: relative;
+
+  margin-bottom: 14px;
+
+}
+
+.progress-track::before {
+
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.06),
+      transparent
+    );
+
+}
+
+.progress-fill {
+
   height: 100%;
-  background: linear-gradient(90deg, #00f2fe, #4facfe);
+
+  width: 0%;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #7be7ff,
+      #83b7ff,
+      #8f8dff
+    );
+
+  position: relative;
+
+  overflow: hidden;
+
+  transition: width 0.12s linear;
+
 }
 
-.meta {
-  font-size: 0.75rem;
-  opacity: 0.85;
-  margin-bottom: 10px;
+.progress-fill::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      rgba(255,255,255,0.45),
+      transparent
+    );
+
+  animation: shimmer 3s linear infinite;
+
 }
+
+@keyframes shimmer {
+
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+
+}
+
+/* ========================================================= */
+/* ======================= META ============================ */
+/* ========================================================= */
+
+.meta-row {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 14px;
+
+  color: var(--text-soft);
+
+  font-size: 0.84rem;
+
+}
+
+.meta-block {
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+}
+
+.meta-value {
+
+  color: white;
+  font-weight: 600;
+
+}
+
+/* ========================================================= */
+/* ======================= GRID ============================ */
+/* ========================================================= */
 
 .grid {
+
+  margin-top: 22px;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 14px;
+
 }
 
-.box {
-  background: rgba(255,255,255,0.12);
-  border-radius: 14px;
-  padding: 10px 0;
+/* ========================================================= */
+/* ====================== TIME CARD ======================== */
+/* ========================================================= */
+
+.time-card {
+
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-card);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0.05)
+    );
+
+  border: 1px solid rgba(255,255,255,0.11);
+
+  padding: 18px 16px;
+
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    border 0.3s ease;
+
 }
 
-.num { font-size: 1.5rem; font-weight: 700; }
-.label { font-size: 0.65rem; opacity: 0.8; letter-spacing: 0.5px; }
+.time-card:active {
+
+  transform: scale(0.98);
+
+}
+
+.time-card::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 40%);
+
+  pointer-events: none;
+
+}
+
+.time-value {
+
+  font-size: clamp(2rem, 8vw, 3rem);
+
+  font-weight: 700;
+
+  letter-spacing: -0.05em;
+
+  line-height: 1;
+
+  margin-bottom: 10px;
+
+}
+
+.time-label {
+
+  font-size: 0.78rem;
+
+  letter-spacing: 0.16em;
+
+  color: var(--text-soft);
+
+}
+
+/* ========================================================= */
+/* ======================= FOOTER ========================== */
+/* ========================================================= */
+
+.footer {
+
+  margin-top: 22px;
+
+  display: flex;
+  justify-content: center;
+
+}
+
+.footer-pill {
+
+  padding: 12px 16px;
+
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.07);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  font-size: 0.84rem;
+
+  color: var(--text-soft);
+
+}
+
+/* ========================================================= */
+/* ===================== END SCREEN ======================== */
+/* ========================================================= */
+
+.end-screen {
+
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  background:
+    radial-gradient(circle at top, rgba(120,160,255,0.3), transparent 40%),
+    linear-gradient(180deg, #07101f, #10254a);
+
+  z-index: 99999;
+
+  animation: fadeInEnd 1.2s ease forwards;
+
+}
+
+.end-title {
+
+  font-size: clamp(2.5rem, 10vw, 4rem);
+
+  font-weight: 700;
+
+  letter-spacing: -0.06em;
+
+}
+
+.end-sub {
+
+  color: var(--text-soft);
+
+  font-size: 1rem;
+
+}
+
+@keyframes fadeInEnd {
+
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+}
+
+/* ========================================================= */
+/* ====================== CONFETTI ========================= */
+/* ========================================================= */
 
 .confetti {
+
   position: fixed;
-  width: 6px;
-  height: 6px;
-  top: -10px;
-  animation: fall 3s linear forwards;
+
+  width: 8px;
+  height: 8px;
+
+  top: -20px;
+
+  border-radius: 999px;
+
+  animation: confettiFall linear forwards;
+
+  pointer-events: none;
+
+  z-index: 999999;
+
 }
 
-@keyframes fall {
-  to { transform: translateY(110vh) rotate(360deg); }
+@keyframes confettiFall {
+
+  to {
+    transform:
+      translateY(120vh)
+      rotate(720deg);
+
+    opacity: 0;
+  }
+
 }
 
-.end {
-  animation: reveal 1.2s ease forwards;
+/* ========================================================= */
+/* ==================== RESPONSIVE ========================= */
+/* ========================================================= */
+
+@media (max-width: 480px) {
+
+  .glass-panel {
+
+    padding-left: 18px;
+    padding-right: 18px;
+
+  }
+
+  .grid {
+
+    gap: 12px;
+
+  }
+
+  .time-card {
+
+    min-height: 108px;
+
+  }
+
 }
 
-@keyframes reveal {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ========================================================= */
+/* ================= REDUCED MOTION ======================== */
+/* ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
 }
+
 </style>
 </head>
-
 <body>
-<div class="container">
-  <h1>Countdown</h1>
 
-  <div class="progress-wrapper">
-    <div class="progress-bar" id="progress"></div>
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+<div class="orb orb-c"></div>
+
+<div class="app-shell">
+
+  <div class="glass-panel">
+
+    <div class="header">
+
+      <div class="title-group">
+
+        <h1 class="main-title">Countdown</h1>
+
+        <div class="subtitle">
+          February 3, 2028 • EST
+        </div>
+
+      </div>
+
+      <div class="live-pill">
+
+        <div class="live-dot"></div>
+
+        <div class="live-text">
+          Live
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="hero-card">
+
+      <div class="progress-top">
+
+        <div class="progress-label">
+          Progress
+        </div>
+
+        <div class="progress-value" id="progressValue">
+          0.00%
+        </div>
+
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="meta-row">
+
+        <div class="meta-block">
+          <div>Days elapsed</div>
+          <div class="meta-value" id="elapsedDays">
+            0
+          </div>
+        </div>
+
+        <div class="meta-block" style="text-align:right;">
+          <div>Timezone</div>
+          <div class="meta-value">
+            EST
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="time-card">
+        <div class="time-value" id="years">0</div>
+        <div class="time-label">YEARS</div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-value" id="months">0</div>
+        <div class="time-label">MONTHS</div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-value" id="weeks">0</div>
+        <div class="time-label">WEEKS</div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-value" id="days">0</div>
+        <div class="time-label">DAYS</div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-value" id="hours">0</div>
+        <div class="time-label">HOURS</div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-value" id="minutes">0</div>
+        <div class="time-label">MINUTES</div>
+      </div>
+
+      <div class="time-card" style="grid-column: span 2;">
+        <div class="time-value" id="seconds">0</div>
+        <div class="time-label">SECONDS</div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+
+      <div class="footer-pill" id="footerText">
+        Every second counts.
+      </div>
+
+    </div>
+
   </div>
 
-  <div class="meta" id="meta"></div>
-
-  <div class="grid" id="grid">
-    <div class="box"><div class="num" id="years"></div><div class="label">YEARS</div></div>
-    <div class="box"><div class="num" id="months"></div><div class="label">MONTHS</div></div>
-    <div class="box"><div class="num" id="weeks"></div><div class="label">WEEKS</div></div>
-    <div class="box"><div class="num" id="days"></div><div class="label">DAYS</div></div>
-    <div class="box"><div class="num" id="hours"></div><div class="label">HOURS</div></div>
-    <div class="box"><div class="num" id="minutes"></div><div class="label">MINUTES</div></div>
-    <div class="box"><div class="num" id="seconds"></div><div class="label">SECONDS</div></div>
-  </div>
 </div>
 
 <script>
-/* ---------- EST OFFSET (ONE-TIME) ---------- */
+
+/* ========================================================= */
+/* ===================== EST OFFSET ======================== */
+/* ========================================================= */
+
 function getESTOffsetMs() {
+
   const now = new Date();
+
   const est = new Date(
-    new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/New_York",
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
-      hour12: false
-    }).format(now)
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        timeZone: "America/New_York",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }
+    ).format(now)
   );
+
   return est.getTime() - now.getTime();
+
 }
+
 const EST_OFFSET = getESTOffsetMs();
 
-/* ---------- CONSTANT DATES ---------- */
+/* ========================================================= */
+/* ======================= DATES =========================== */
+/* ========================================================= */
+
 const START = new Date("2026-02-03T00:00:00-05:00").getTime();
 const MID   = new Date("2027-02-03T00:00:00-05:00").getTime();
 const END   = new Date("2028-02-03T00:00:00-05:00").getTime();
 
-let firedMid = false;
-let firedEnd = false;
+/* ========================================================= */
+/* ===================== REFERENCES ======================== */
+/* ========================================================= */
+
+const yearsEl = document.getElementById("years");
+const monthsEl = document.getElementById("months");
+const weeksEl = document.getElementById("weeks");
+const daysEl = document.getElementById("days");
+const hoursEl = document.getElementById("hours");
+const minutesEl = document.getElementById("minutes");
+const secondsEl = document.getElementById("seconds");
+
+const progressFill = document.getElementById("progressFill");
+const progressValue = document.getElementById("progressValue");
+const elapsedDays = document.getElementById("elapsedDays");
+const footerText = document.getElementById("footerText");
+
+/* ========================================================= */
+/* ====================== UTILITIES ======================== */
+/* ========================================================= */
 
 function nowEST() {
   return Date.now() + EST_OFFSET;
 }
 
-/* ---------- CONFETTI ---------- */
-function confetti(count = 80) {
-  for (let i = 0; i < count; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.background = `hsl(${Math.random()*360},100%,60%)`;
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3000);
-  }
+function pad(value) {
+  return String(value).padStart(2, "0");
 }
 
-/* ---------- UPDATE ---------- */
+/* ========================================================= */
+/* ====================== CONFETTI ========================= */
+/* ========================================================= */
+
+function confetti(amount = 140) {
+
+  for (let i = 0; i < amount; i++) {
+
+    const piece = document.createElement("div");
+
+    piece.className = "confetti";
+
+    piece.style.left = Math.random() * 100 + "vw";
+
+    piece.style.background =
+      `hsl(${Math.random() * 360}, 100%, 65%)`;
+
+    piece.style.animationDuration =
+      2 + Math.random() * 3 + "s";
+
+    piece.style.opacity =
+      0.6 + Math.random() * 0.4;
+
+    document.body.appendChild(piece);
+
+    setTimeout(() => {
+      piece.remove();
+    }, 5000);
+
+  }
+
+}
+
+/* ========================================================= */
+/* =================== EVENT TRACKERS ====================== */
+/* ========================================================= */
+
+let halfwayTriggered = false;
+let endTriggered = false;
+
+/* ========================================================= */
+/* ====================== MAIN LOOP ======================== */
+/* ========================================================= */
+
 function update() {
+
   const now = nowEST();
 
-  if (!firedMid && now >= MID) {
-    firedMid = true;
-    confetti(100);
+  if (!halfwayTriggered && now >= MID) {
+
+    halfwayTriggered = true;
+
+    footerText.textContent = "One year remaining.";
+
+    confetti(120);
+
   }
 
   if (now >= END) {
-    if (!firedEnd) {
-      firedEnd = true;
-      confetti(160);
+
+    if (!endTriggered) {
+
+      endTriggered = true;
+
+      confetti(240);
+
     }
-    document.body.innerHTML = "<h1 class='end'>📞 Call today?</h1>";
+
+    document.body.innerHTML = `
+
+      <div class="end-screen">
+
+        <div class="end-title">
+          📞 Call today?
+        </div>
+
+        <div class="end-sub">
+          February 3rd, 2028 has arrived.
+        </div>
+
+      </div>
+
+    `;
+
     return;
+
   }
 
-  let remaining = END - now;
+  const remaining = END - now;
 
-  const secondsTotal = Math.floor(remaining / 1000);
-  seconds.textContent = secondsTotal % 60;
+  const totalSeconds = Math.floor(remaining / 1000);
 
-  const minutesTotal = Math.floor(secondsTotal / 60);
-  minutes.textContent = minutesTotal % 60;
+  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
 
-  const hoursTotal = Math.floor(minutesTotal / 60);
-  hours.textContent = hoursTotal % 24;
+  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(totalMinutes / 60);
 
-  const daysTotal = Math.floor(hoursTotal / 24);
-  weeks.textContent = Math.floor(daysTotal / 7);
-  days.textContent = daysTotal % 7;
+  const hours = totalHours % 24;
+  const totalDays = Math.floor(totalHours / 24);
 
-  months.textContent = Math.floor(daysTotal / 30.44);
-  years.textContent = Math.floor(daysTotal / 365.25);
+  const years = Math.floor(totalDays / 365.25);
+  const months = Math.floor(totalDays / 30.44) % 12;
+  const weeks = Math.floor(totalDays / 7) % 4;
+  const days = totalDays % 7;
 
-  let percentRaw = ((now - START) / (END - START)) * 100;
-  let percent = percentRaw >= 100 ? 100 : percentRaw;
+  yearsEl.textContent = years;
+  monthsEl.textContent = months;
+  weeksEl.textContent = weeks;
+  daysEl.textContent = days;
+  hoursEl.textContent = pad(hours);
+  minutesEl.textContent = pad(minutes);
+  secondsEl.textContent = pad(seconds);
 
-  progress.style.width = percent.toFixed(2) + "%";
-  meta.textContent = percent.toFixed(2) + "% completed";
+  const rawPercent =
+    ((now - START) / (END - START)) * 100;
+
+  let shownPercent = rawPercent;
+
+  if (shownPercent >= 100) {
+    shownPercent = 100;
+  }
+
+  progressFill.style.width =
+    shownPercent.toFixed(2) + "%";
+
+  progressValue.textContent =
+    shownPercent.toFixed(2) + "%";
+
+  elapsedDays.textContent =
+    Math.floor((now - START) / 86400000);
+
 }
 
+/* ========================================================= */
+/* ===================== UPDATE RATE ======================= */
+/* ========================================================= */
+
 setInterval(update, 100);
+
 update();
+
 </script>
+
 </body>
 </html>
+```
+
+This redesign keeps the app smooth on mobile while giving it a more Apple-inspired liquid glass feel with layered blur, floating gradients, glass cards, soft l
